@@ -1,13 +1,15 @@
 import { Pool } from 'pg';
 
+const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 export const initDb = async () => {
   // Only try to initialize if we have a connection string
-  if (!process.env.DATABASE_URL) return;
+  if (!connectionString) return;
   
   try {
     await pool.query(`
