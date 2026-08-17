@@ -372,9 +372,36 @@ th {
 .gap-1 { gap: 1rem; }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none; /* simple mobile nav for now, will keep it basic or add a menu */
+  .mobile-menu-btn {
+    display: block !important;
   }
+  
+  .nav-links {
+    position: absolute;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    background-color: rgba(13, 13, 13, 0.95);
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+    transform: translateY(-150%);
+    transition: transform 0.3s ease;
+    border-bottom: 1px solid var(--surface-border);
+    z-index: 99;
+  }
+  
+  .nav-links.mobile-open {
+    transform: translateY(0);
+  }
+
+  .nav-links > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+    width: 100%;
+    margin-left: 0 !important;
+  }
+  
   .admin-layout {
     flex-direction: column;
   }

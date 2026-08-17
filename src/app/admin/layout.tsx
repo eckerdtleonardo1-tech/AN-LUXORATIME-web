@@ -2,58 +2,31 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { Package, ShoppingBag, LogOut, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
+import { useEffect } from 'react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
+  const { user, isLoading, setUser } = useAuth();
 
-  // Simple auth for prototype
   useEffect(() => {
-    if (localStorage.getItem('admin_auth') === 'true') {
-      setIsAuthenticated(true);
+    if (!isLoading && (!user || user.role !== 'admin')) {
+      router.push('/login');
     }
-  }, []);
+  }, [user, isLoading, router]);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'admin123') { // Simple password
-      localStorage.setItem('admin_auth', 'true');
-      setIsAuthenticated(true);
-    } else {
-      alert('Contraseña incorrecta');
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_auth');
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setUser(null);
     router.push('/');
   };
 
-  if (!isAuthenticated) {
+  if (isLoading || !user || user.role !== 'admin') {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
-        <div className="card" style={{ padding: '3rem', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '2rem' }}>Admin Login</h2>
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <input 
-                type="password" 
-                className="input" 
-                placeholder="Contraseña" 
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Ingresar</button>
-          </form>
-          <Link href="/" style={{ display: 'block', marginTop: '1.5rem', color: 'var(--text-secondary)' }}>Volver a la tienda</Link>
-        </div>
+        <p>Verificando permisos...</p>
       </div>
     );
   }

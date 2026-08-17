@@ -30,6 +30,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const handleAuthSuccess = ((e: CustomEvent) => {
+      setItems(e.detail || []);
+      setIsLoaded(true);
+    }) as EventListener;
+    
+    window.addEventListener('auth-success', handleAuthSuccess);
+
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
@@ -37,11 +44,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {}
     }
     setIsLoaded(true);
+
+    return () => window.removeEventListener('auth-success', handleAuthSuccess);
   }, []);
 
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem('cart', JSON.stringify(items));
+      // Sync to backend if possible
+      fetch('/api/auth/me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart: items })
+      }).catch(() => {});
     }
   }, [items, isLoaded]);
 

@@ -39,6 +39,14 @@ export const initDb = async () => {
         quantity INTEGER NOT NULL,
         "priceAtTime" NUMERIC NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        cart JSONB DEFAULT '[]'::jsonb
+      );
     `);
   } catch (err) {
     console.error('Error initializing DB:', err);
