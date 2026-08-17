@@ -15,7 +15,7 @@ export default function Home() {
         textAlign: 'center'
       }}>
         <div className="container">
-          <h1 style={{ fontSize: '4rem', textTransform: 'uppercase', marginBottom: '1rem', color: '#fff' }}>
+          <h1 style={{ textTransform: 'uppercase', marginBottom: '1rem', color: '#fff' }}>
             Resistencia <span style={{ color: 'var(--accent-color)' }}>Extrema</span>
           </h1>
           <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2rem', color: '#ccc' }}>

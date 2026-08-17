@@ -72,7 +72,7 @@ export default function CartPage() {
       <h1 style={{ textTransform: 'uppercase', marginBottom: '2rem' }}>Tu Carrito</h1>
       
       <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 600px' }}>
+        <div style={{ flex: '1 1 100%', maxWidth: '100%' }}>
           <div className="card" style={{ padding: '1rem' }}>
             {items.map(item => (
               <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid var(--surface-border)' }}>
@@ -97,7 +97,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        <div style={{ flex: '1 1 350px' }}>
+        <div style={{ flex: '1 1 300px', maxWidth: '100%' }}>
           <div className="card" style={{ padding: '2rem' }}>
             <h3 style={{ marginBottom: '1.5rem' }}>Datos de Contacto</h3>
             <form onSubmit={handleCheckout}>

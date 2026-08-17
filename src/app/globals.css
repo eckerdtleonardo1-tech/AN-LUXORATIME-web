@@ -32,6 +32,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 a {
@@ -69,9 +70,9 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-h2 { font-size: 2rem; margin-bottom: 1rem; }
-h3 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+h1 { font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem; }
+h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 1rem; }
+h3 { font-size: clamp(1.2rem, 3vw, 1.5rem); margin-bottom: 0.75rem; }
 p { margin-bottom: 1rem; color: var(--text-secondary); }
 
 /* Components */
@@ -148,6 +149,10 @@ p { margin-bottom: 1rem; color: var(--text-secondary); }
 
 .card:hover {
   border-color: var(--accent-color);
+}
+
+.mobile-menu-btn {
+  display: none;
 }
 
 /* Header */
