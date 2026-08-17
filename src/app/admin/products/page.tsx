@@ -21,6 +21,21 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024 * 5) { // 5MB limit
+        alert('La imagen es demasiado grande. Máximo 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCurrentProduct(prev => ({ ...prev, image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const isNew = !currentProduct.id;
@@ -82,8 +97,13 @@ export default function AdminProducts() {
               <input type="text" className="input" required value={currentProduct.category} onChange={e => setCurrentProduct({...currentProduct, category: e.target.value})} />
             </div>
             <div className="form-group">
-              <label className="form-label">URL de la Imagen</label>
-              <input type="url" className="input" required value={currentProduct.image} onChange={e => setCurrentProduct({...currentProduct, image: e.target.value})} />
+              <label className="form-label">Imagen del Producto</label>
+              <input type="file" accept="image/*" className="input" onChange={handleImageUpload} />
+              {currentProduct.image && (
+                <div style={{ marginTop: '1rem' }}>
+                  <img src={currentProduct.image} alt="Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--surface-border)' }} />
+                </div>
+              )}
             </div>
             
             <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>

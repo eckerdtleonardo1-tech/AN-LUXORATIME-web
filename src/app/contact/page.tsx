@@ -17,7 +17,7 @@ export default function ContactPage() {
           
           <h3 style={{ marginTop: '2rem', marginBottom: '1rem', color: 'var(--accent-color)' }}>Redes Sociales</h3>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <a href="#" className="btn btn-secondary">Instagram</a>
+            <a href="https://www.instagram.com/an_luxoratime?igsh=MTNqd3ZtcHI3d2hoZQ==" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">Instagram</a>
             <a href="#" className="btn btn-secondary">Facebook</a>
           </div>
         </div>

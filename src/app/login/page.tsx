@@ -54,7 +54,7 @@ export default function LoginPage() {
         
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label">Email (Dejar vacío si eres admin)</label>
+            <label className="form-label">Email</label>
             <input 
               type="email" 
               className="input" 
