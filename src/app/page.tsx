@@ -16,14 +16,16 @@ export default async function Home() {
     <div className="home-page">
       {/* Hero Banner */}
       <section className="hero" style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=1920&auto=format&fit=crop")',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://watchello.es/cdn/shop/collections/gshock-casioak-resin.jpg")',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
         padding: '6rem 0',
         minHeight: '70vh',
         display: 'flex',
         alignItems: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
+        width: '100%'
       }}>
         <div className="container">
           <h1 style={{ textTransform: 'uppercase', marginBottom: '1rem', color: '#fff' }}>
