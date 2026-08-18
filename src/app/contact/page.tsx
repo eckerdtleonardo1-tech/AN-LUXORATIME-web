@@ -1,4 +1,26 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function ContactPage() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const WHATSAPP_NUMBER = '3329534029';
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.message) {
+      alert('Por favor completa tu nombre y mensaje.');
+      return;
+    }
+    
+    let text = `*Nueva Consulta - AN LUXORATIME*%0A%0A`;
+    text += `*Nombre:* ${formData.name}%0A`;
+    if (formData.email) text += `*Email:* ${formData.email}%0A`;
+    text += `*Mensaje:*%0A${formData.message}`;
+
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+  };
+
   return (
     <div className="container" style={{ padding: '3rem 20px', maxWidth: '800px' }}>
       <h1 style={{ textTransform: 'uppercase', marginBottom: '1rem', textAlign: 'center' }}>Contacto</h1>
@@ -10,7 +32,7 @@ export default function ContactPage() {
         <div style={{ flex: '1 1 300px' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--accent-color)' }}>Información Directa</h3>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <li><strong>WhatsApp:</strong> +54 9 11 1234-5678</li>
+            <li><strong>WhatsApp:</strong> 33 2953-4029</li>
             <li><strong>Email:</strong> contacto@anluxoratime.com</li>
             <li><strong>Horario:</strong> Lun a Vie - 10:00 a 18:00hs</li>
           </ul>
@@ -24,20 +46,40 @@ export default function ContactPage() {
 
         <div style={{ flex: '2 1 400px' }}>
           <div className="card" style={{ padding: '2rem' }}>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">Nombre</label>
-                <input type="text" className="input" placeholder="Tu nombre" />
+                <input 
+                  type="text" 
+                  className="input" 
+                  placeholder="Tu nombre" 
+                  required
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Email</label>
-                <input type="email" className="input" placeholder="tu@email.com" />
+                <input 
+                  type="email" 
+                  className="input" 
+                  placeholder="tu@email.com" 
+                  value={formData.email}
+                  onChange={e => setFormData({...formData, email: e.target.value})}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Mensaje</label>
-                <textarea className="input" rows={5} placeholder="Escribe tu consulta aquí..."></textarea>
+                <textarea 
+                  className="input" 
+                  rows={5} 
+                  placeholder="Escribe tu consulta aquí..."
+                  required
+                  value={formData.message}
+                  onChange={e => setFormData({...formData, message: e.target.value})}
+                ></textarea>
               </div>
-              <button type="button" className="btn btn-primary" style={{ width: '100%' }}>Enviar Mensaje</button>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Enviar Mensaje por WhatsApp</button>
             </form>
           </div>
         </div>

@@ -7,16 +7,18 @@ import { Product, useCart } from '@/components/CartProvider';
 import { useAuth } from '@/components/AuthProvider';
 import { X } from 'lucide-react';
 
+import LoginModal from '@/components/LoginModal';
+
 export default function FeaturedGrid({ products }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
 
   const handleAddToCart = (product: Product) => {
     if (!user) {
-      alert('Debes iniciar sesión para agregar productos al carrito.');
-      router.push('/login');
+      setShowLoginModal(true);
       return;
     }
     addToCart(product);
@@ -114,6 +116,8 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
           </div>
         </div>
       )}
+
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </>
   );
 }
