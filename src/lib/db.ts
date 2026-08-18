@@ -23,6 +23,8 @@ export const initDb = async () => {
         category VARCHAR(100)
       );
 
+      ALTER TABLE products ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;
+
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
         "customerName" VARCHAR(255) NOT NULL,

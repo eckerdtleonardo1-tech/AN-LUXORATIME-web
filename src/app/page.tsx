@@ -1,11 +1,22 @@
 import Link from 'next/link';
+import db from '@/lib/db';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  let featuredProducts = [];
+  try {
+    const result = await db.query('SELECT * FROM products WHERE featured = true LIMIT 6');
+    featuredProducts = result.rows;
+  } catch (e) {
+    console.error(e);
+  }
+
   return (
     <div className="home-page">
       {/* Hero Banner */}
       <section className="hero" style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=1920&auto=format&fit=crop")',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=1920&auto=format&fit=crop")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         padding: '6rem 0',
@@ -27,50 +38,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Section (Static placeholder for concept) */}
+      {/* Featured Section */}
       <section className="featured-section" style={{ padding: '5rem 0' }}>
         <div className="container">
           <h2 className="text-center mb-2" style={{ textTransform: 'uppercase' }}>Destacados</h2>
           
           <div className="grid-products">
-            {/* Example product 1 */}
-            <div className="card product-card">
-              <div className="product-image-container">
-                <img src="https://images.unsplash.com/photo-1549972574-8e3e1ed6a347?w=500&auto=format&fit=crop" alt="G-Shock Black" />
+            {featuredProducts.length > 0 ? featuredProducts.map((p: any) => (
+              <div key={p.id} className="card product-card">
+                <div className="product-image-container">
+                  <img src={p.image} alt={p.name} />
+                </div>
+                <div className="product-info">
+                  <h3 className="product-title">{p.name}</h3>
+                  <div className="product-price">$ {Number(p.price).toLocaleString('es-AR')}</div>
+                  <p className="product-desc" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
+                  <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
+                </div>
               </div>
-              <div className="product-info">
-                <h3 className="product-title">Casio G-Shock DW-5600BB</h3>
-                <div className="product-price">$ 140,000</div>
-                <p className="product-desc">Un clásico atemporal en un formato All-Black. Resistencia extrema al impacto y resistencia al agua.</p>
-                <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
-              </div>
-            </div>
-
-            {/* Example product 2 */}
-            <div className="card product-card">
-              <div className="product-image-container">
-                <img src="https://images.unsplash.com/photo-1614164185128-f4cb0ba98d59?w=500&auto=format&fit=crop" alt="G-Shock Mudmaster" />
-              </div>
-              <div className="product-info">
-                <h3 className="product-title">Casio G-Shock Mudmaster</h3>
-                <div className="product-price">$ 320,000</div>
-                <p className="product-desc">Construido para resistir lodo y vibraciones, con brújula y termómetro. Tu mejor aliado outdoor.</p>
-                <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
-              </div>
-            </div>
-
-            {/* Example product 3 */}
-            <div className="card product-card">
-              <div className="product-image-container">
-                <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&auto=format&fit=crop" alt="G-Shock GA-2100" />
-              </div>
-              <div className="product-info">
-                <h3 className="product-title">Casio G-Shock GA-2100</h3>
-                <div className="product-price">$ 180,000</div>
-                <p className="product-desc">Conocido como el "CasiOak". Diseño octogonal super delgado y minimalista pero con estructura Carbon Core Guard.</p>
-                <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
-              </div>
-            </div>
+            )) : (
+              <p className="text-center" style={{ gridColumn: '1 / -1' }}>No hay productos destacados por el momento.</p>
+            )}
           </div>
         </div>
       </section>

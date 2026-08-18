@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Product } from '@/components/CartProvider';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Star } from 'lucide-react';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({
-    name: '', description: '', price: 0, stock: 0, image: '', category: ''
+    name: '', description: '', price: 0, stock: 0, image: '', category: '', featured: false
   });
 
   const fetchProducts = async () => {
@@ -50,10 +50,21 @@ export default function AdminProducts() {
 
     if (res.ok) {
       setIsEditing(false);
-      setCurrentProduct({ name: '', description: '', price: 0, stock: 0, image: '', category: '' });
+      setCurrentProduct({ name: '', description: '', price: 0, stock: 0, image: '', category: '', featured: false });
       fetchProducts();
     } else {
       alert('Error al guardar el producto');
+    }
+  };
+
+  const handleToggleFeatured = async (product: Product) => {
+    const res = await fetch(`/api/products/${product.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...product, featured: !product.featured })
+    });
+    if (res.ok) {
+      fetchProducts();
     }
   };
 
@@ -147,6 +158,14 @@ export default function AdminProducts() {
                 <td>{p.stock}</td>
                 <td>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button 
+                      className="btn" 
+                      style={{ padding: '0.5rem', backgroundColor: p.featured ? '#ffd700' : 'var(--surface-color)', color: p.featured ? '#000' : 'var(--text-secondary)', border: '1px solid var(--surface-border)' }} 
+                      onClick={() => handleToggleFeatured(p)}
+                      title={p.featured ? "Quitar de destacados" : "Destacar"}
+                    >
+                      <Star size={16} />
+                    </button>
                     <button className="btn btn-secondary" style={{ padding: '0.5rem' }} onClick={() => { setCurrentProduct(p); setIsEditing(true); }}>
                       <Edit size={16} />
                     </button>

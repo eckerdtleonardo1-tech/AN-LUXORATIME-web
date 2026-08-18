@@ -52,11 +52,12 @@ export default function AdminOrders() {
     const tableRows: string[][] = [];
 
     order.items.forEach((item: any) => {
+      const price = Number(item.priceAtTime);
       const rowData = [
         item.productName,
         item.quantity.toString(),
-        `$ ${item.priceAtTime.toLocaleString('es-AR')}`,
-        `$ ${(item.priceAtTime * item.quantity).toLocaleString('es-AR')}`
+        `$ ${price.toLocaleString('es-AR')}`,
+        `$ ${(price * item.quantity).toLocaleString('es-AR')}`
       ];
       tableRows.push(rowData);
     });
@@ -72,7 +73,7 @@ export default function AdminOrders() {
     const finalY = (doc as any).lastAutoTable.finalY || 80;
     
     doc.setFontSize(16);
-    doc.text(`TOTAL: $ ${order.totalAmount.toLocaleString('es-AR')}`, 14, finalY + 20);
+    doc.text(`TOTAL: $ ${Number(order.totalAmount).toLocaleString('es-AR')}`, 14, finalY + 20);
 
     doc.setFontSize(10);
     doc.text('Gracias por su compra. Especialistas en Casio G-Shock.', 14, finalY + 40);
@@ -114,7 +115,7 @@ export default function AdminOrders() {
                   <div>{order.customerName}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{order.customerPhone}</div>
                 </td>
-                <td style={{ fontWeight: 'bold' }}>$ {order.totalAmount.toLocaleString('es-AR')}</td>
+                <td style={{ fontWeight: 'bold' }}>$ {Number(order.totalAmount).toLocaleString('es-AR')}</td>
                 <td>
                   <select 
                     className={`status-badge ${getStatusClass(order.status)}`}

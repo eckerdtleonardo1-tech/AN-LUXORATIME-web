@@ -10,6 +10,7 @@ export type Product = {
   stock: number;
   image: string;
   category: string;
+  featured?: boolean;
 };
 
 export type CartItem = Product & { quantity: number };

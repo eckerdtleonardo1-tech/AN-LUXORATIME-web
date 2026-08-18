@@ -6,13 +6,13 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     const params = await context.params;
     const id = params.id;
     const body = await request.json();
-    const { name, description, price, stock, image, category } = body;
+    const { name, description, price, stock, image, category, featured } = body;
     
     await db.query(`
       UPDATE products 
-      SET name = $1, description = $2, price = $3, stock = $4, image = $5, category = $6
-      WHERE id = $7
-    `, [name, description, price, stock, image, category, id]);
+      SET name = $1, description = $2, price = $3, stock = $4, image = $5, category = $6, featured = $7
+      WHERE id = $8
+    `, [name, description, price, stock, image, category, featured || false, id]);
     
     return NextResponse.json({ id, ...body });
   } catch (error) {
