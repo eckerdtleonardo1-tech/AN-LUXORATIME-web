@@ -2,12 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Product, useCart } from '@/components/CartProvider';
+import { useAuth } from '@/components/AuthProvider';
 import { X } from 'lucide-react';
 
 export default function FeaturedGrid({ products }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleAddToCart = (product: Product) => {
+    if (!user) {
+      alert('Debes iniciar sesión para agregar productos al carrito.');
+      router.push('/login');
+      return;
+    }
+    addToCart(product);
+    setSelectedProduct(null);
+  };
 
   return (
     <>
@@ -91,10 +105,7 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
               <button 
                 className="btn btn-primary" 
                 style={{ width: '100%', padding: '1rem' }}
-                onClick={() => {
-                  addToCart(selectedProduct);
-                  setSelectedProduct(null);
-                }}
+                onClick={() => handleAddToCart(selectedProduct)}
                 disabled={selectedProduct.stock <= 0}
               >
                 {selectedProduct.stock > 0 ? 'Agregar al Carrito' : 'Agotado'}

@@ -11,7 +11,7 @@ export default function AdminOrders() {
   const fetchOrders = async () => {
     const res = await fetch('/api/orders');
     const data = await res.json();
-    setOrders(data);
+    setOrders(data.filter((o: any) => !o.archived));
   };
 
   useEffect(() => {

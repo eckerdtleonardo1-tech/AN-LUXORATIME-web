@@ -42,6 +42,8 @@ export const initDb = async () => {
         "priceAtTime" NUMERIC NOT NULL
       );
 
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE;
+
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,

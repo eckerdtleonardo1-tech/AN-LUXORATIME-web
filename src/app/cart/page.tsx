@@ -9,7 +9,7 @@ export default function CartPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '' });
 
-  const WHATSAPP_NUMBER = '5491112345678'; // Reemplazar por número real
+  const WHATSAPP_NUMBER = '3329534029';
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -24,7 +24,7 @@ export default function AdminDashboard() {
             if (orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear) {
               totalSales += Number(order.totalAmount);
             }
-          } else {
+          } else if (!order.archived) {
             totalPending += 1;
           }
         });

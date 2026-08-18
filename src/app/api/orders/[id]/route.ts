@@ -30,9 +30,8 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const params = await context.params;
     const id = params.id;
 
-    // Delete order items first due to foreign key constraint
-    await db.query(`DELETE FROM order_items WHERE "orderId" = $1`, [id]);
-    await db.query(`DELETE FROM orders WHERE id = $1`, [id]);
+    // Soft delete to preserve sales history
+    await db.query(`UPDATE orders SET archived = true WHERE id = $1`, [id]);
     
     return NextResponse.json({ success: true });
   } catch (error) {

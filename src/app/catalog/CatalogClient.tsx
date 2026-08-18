@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product, useCart } from '@/components/CartProvider';
+import { useAuth } from '@/components/AuthProvider';
 import { X } from 'lucide-react';
 
 export default function CatalogClient({ initialProducts }: { initialProducts: Product[] }) {
@@ -9,6 +11,18 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
   const [filter, setFilter] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleAddToCart = (product: Product) => {
+    if (!user) {
+      alert('Debes iniciar sesión para agregar productos al carrito.');
+      router.push('/login');
+      return;
+    }
+    addToCart(product);
+    setSelectedProduct(null);
+  };
 
   const categories = Array.from(new Set(initialProducts.map(p => p.category).filter(Boolean)));
 
@@ -64,7 +78,7 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
                 <button 
                   className="btn btn-primary" 
                   style={{ width: '100%', marginTop: 'auto' }}
-                  onClick={() => addToCart(product)}
+                  onClick={() => handleAddToCart(product)}
                   disabled={product.stock <= 0}
                 >
                   {product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
@@ -133,10 +147,7 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
               <button 
                 className="btn btn-primary" 
                 style={{ width: '100%', padding: '1rem' }}
-                onClick={() => {
-                  addToCart(selectedProduct);
-                  setSelectedProduct(null);
-                }}
+                onClick={() => handleAddToCart(selectedProduct)}
                 disabled={selectedProduct.stock <= 0}
               >
                 {selectedProduct.stock > 0 ? 'Agregar al Carrito' : 'Agotado'}
