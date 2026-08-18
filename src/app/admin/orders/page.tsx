@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText, Trash2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -29,6 +29,17 @@ export default function AdminOrders() {
       fetchOrders();
     } else {
       alert('Error al actualizar estado');
+    }
+  };
+
+  const handleDeleteOrder = async (id: number) => {
+    if (!confirm('¿Seguro que deseas eliminar este pedido del historial?')) return;
+    
+    const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      fetchOrders();
+    } else {
+      alert('Error al eliminar el pedido');
     }
   };
 
@@ -138,9 +149,16 @@ export default function AdminOrders() {
                   </select>
                 </td>
                 <td>
-                  <button className="btn btn-secondary" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => generatePDF(order)}>
-                    <FileText size={16} /> Recibo PDF
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn btn-secondary" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => generatePDF(order)}>
+                      <FileText size={16} /> Recibo PDF
+                    </button>
+                    {order.status === 'Entregado' && (
+                      <button className="btn btn-danger" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center' }} onClick={() => handleDeleteOrder(order.id)}>
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

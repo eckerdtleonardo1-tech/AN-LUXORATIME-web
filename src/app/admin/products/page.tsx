@@ -96,7 +96,16 @@ export default function AdminProducts() {
             <div style={{ display: 'flex', gap: '1rem' }}>
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">Precio</label>
-                <input type="number" className="input" required value={currentProduct.price} onChange={e => setCurrentProduct({...currentProduct, price: Number(e.target.value)})} />
+                <input 
+                  type="text" 
+                  className="input" 
+                  required 
+                  value={currentProduct.price ? currentProduct.price.toLocaleString('es-AR') : ''} 
+                  onChange={e => {
+                    const rawValue = e.target.value.replace(/\D/g, '');
+                    setCurrentProduct({...currentProduct, price: Number(rawValue)});
+                  }} 
+                />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">Stock</label>

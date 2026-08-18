@@ -24,3 +24,19 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const params = await context.params;
+    const id = params.id;
+
+    // Delete order items first due to foreign key constraint
+    await db.query(`DELETE FROM order_items WHERE "orderId" = $1`, [id]);
+    await db.query(`DELETE FROM orders WHERE id = $1`, [id]);
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
+  }
+}
