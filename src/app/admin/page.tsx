@@ -22,7 +22,9 @@ export default function AdminDashboard() {
           const orderDate = new Date(order.createdAt);
           if (order.status === 'Entregado') {
             if (orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear) {
-              totalSales += Number(order.totalAmount);
+              if (order.countedInSales !== false) {
+                totalSales += Number(order.totalAmount);
+              }
             }
           } else if (!order.archived) {
             totalPending += 1;
@@ -36,9 +38,25 @@ export default function AdminDashboard() {
     fetchOrders();
   }, []);
 
+  const handleResetSales = async () => {
+    if (!confirm('¿Seguro que deseas reiniciar las ventas del mes a $0? Esto marcará todos los pedidos entregados de este mes como ya contados, ocultándolos del total, pero seguirán existiendo en la base de datos.')) return;
+    
+    const res = await fetch('/api/orders/reset', { method: 'POST' });
+    if (res.ok) {
+      setSales(0);
+    } else {
+      alert('Error al reiniciar las ventas');
+    }
+  };
+
   return (
     <div>
-      <h1 style={{ marginBottom: '2rem' }}>Resumen del Negocio</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ margin: 0 }}>Resumen del Negocio</h1>
+        <button className="btn btn-secondary" onClick={handleResetSales}>
+          Reiniciar Ventas del Mes
+        </button>
+      </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '2rem' }}>
         <div className="card" style={{ padding: '2rem' }}>

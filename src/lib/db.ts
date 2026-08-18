@@ -47,6 +47,7 @@ export const initDb = async () => {
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS "customerEmail" VARCHAR(255);
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS "customerAddress" VARCHAR(255);
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS "customerProvince" VARCHAR(255);
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS "countedInSales" BOOLEAN DEFAULT TRUE;
 
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
