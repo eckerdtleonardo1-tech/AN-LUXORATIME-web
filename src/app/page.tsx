@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import db from '@/lib/db';
+import FeaturedGrid from '@/components/FeaturedGrid';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,23 +46,7 @@ export default async function Home() {
         <div className="container">
           <h2 className="text-center mb-2" style={{ textTransform: 'uppercase' }}>Destacados</h2>
           
-          <div className="grid-products">
-            {featuredProducts.length > 0 ? featuredProducts.map((p: any) => (
-              <div key={p.id} className="card product-card">
-                <div className="product-image-container">
-                  <img src={p.image} alt={p.name} />
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{p.name}</h3>
-                  <div className="product-price">$ {Number(p.price).toLocaleString('es-AR')}</div>
-                  <p className="product-desc" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
-                  <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
-                </div>
-              </div>
-            )) : (
-              <p className="text-center" style={{ gridColumn: '1 / -1' }}>No hay productos destacados por el momento.</p>
-            )}
-          </div>
+          <FeaturedGrid products={featuredProducts as any[]} />
         </div>
       </section>
 

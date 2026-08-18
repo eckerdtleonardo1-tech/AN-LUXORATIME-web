@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -33,53 +33,62 @@ export default function AdminOrders() {
   };
 
   const generatePDF = (order: any) => {
-    const doc = new jsPDF();
-    
-    // Header
-    doc.setFontSize(22);
-    doc.text('AN LUXORATIME', 14, 20);
-    doc.setFontSize(12);
-    doc.text('Recibo de Compra', 14, 30);
-    doc.text(`Pedido #: ${order.id}`, 14, 40);
-    doc.text(`Fecha: ${new Date(order.createdAt).toLocaleDateString('es-AR')}`, 14, 48);
-    
-    // Customer Info
-    doc.text(`Cliente: ${order.customerName}`, 14, 60);
-    doc.text(`Teléfono: ${order.customerPhone}`, 14, 68);
-    
-    // Items table
-    const tableColumn = ["Producto", "Cantidad", "Precio Unitario", "Subtotal"];
-    const tableRows: string[][] = [];
+    try {
+      const doc = new jsPDF();
+      
+      // Header
+      doc.setFontSize(22);
+      doc.text('AN LUXORATIME', 14, 20);
+      doc.setFontSize(12);
+      doc.text('Recibo de Compra', 14, 30);
+      doc.text(`Pedido #: ${order.id}`, 14, 40);
+      doc.text(`Fecha: ${new Date(order.createdAt).toLocaleDateString('es-AR')}`, 14, 48);
+      
+      // Customer Info
+      doc.text(`Cliente: ${order.customerName}`, 14, 60);
+      doc.text(`Teléfono: ${order.customerPhone}`, 14, 68);
+      
+      // Items table
+      const tableColumn = ["Producto", "Cantidad", "Precio Unitario", "Subtotal"];
+      const tableRows: string[][] = [];
 
-    order.items.forEach((item: any) => {
-      const price = Number(item.priceAtTime);
-      const rowData = [
-        item.productName,
-        item.quantity.toString(),
-        `$ ${price.toLocaleString('es-AR')}`,
-        `$ ${(price * item.quantity).toLocaleString('es-AR')}`
-      ];
-      tableRows.push(rowData);
-    });
+      if (order.items && Array.isArray(order.items)) {
+        order.items.forEach((item: any) => {
+          const price = Number(item.priceAtTime);
+          const rowData = [
+            item.productName || 'Producto',
+            item.quantity.toString(),
+            `$ ${price.toLocaleString('es-AR')}`,
+            `$ ${(price * item.quantity).toLocaleString('es-AR')}`
+          ];
+          tableRows.push(rowData);
+        });
+      }
 
-    (doc as any).autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 80,
-      theme: 'grid',
-      headStyles: { fillColor: [20, 20, 20] }
-    });
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 80,
+        theme: 'grid',
+        headStyles: { fillColor: [20, 20, 20] }
+      });
 
-    const finalY = (doc as any).lastAutoTable.finalY || 80;
-    
-    doc.setFontSize(16);
-    doc.text(`TOTAL: $ ${Number(order.totalAmount).toLocaleString('es-AR')}`, 14, finalY + 20);
+      const finalY = (doc as any).lastAutoTable?.finalY || 80;
+      
+      doc.setFontSize(16);
+      doc.text(`TOTAL: $ ${Number(order.totalAmount).toLocaleString('es-AR')}`, 14, finalY + 20);
 
-    doc.setFontSize(10);
-    doc.text('Gracias por su compra. Especialistas en Casio G-Shock.', 14, finalY + 40);
+      doc.setFontSize(10);
+      doc.text('Gracias por su compra. Especialistas en Casio G-Shock.', 14, finalY + 40);
 
-    doc.save(`Recibo_Pedido_${order.id}.pdf`);
+      doc.save(`Recibo_Pedido_${order.id}.pdf`);
+    } catch (e) {
+      console.error('Error generating PDF:', e);
+      alert('Error al generar PDF. Verifica la consola.');
+    }
   };
+
+
 
   const getStatusClass = (status: string) => {
     switch (status) {
