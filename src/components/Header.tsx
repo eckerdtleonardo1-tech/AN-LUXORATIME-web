@@ -5,7 +5,7 @@ import { useCart } from './CartProvider';
 import { useAuth } from './AuthProvider';
 import { ShoppingCart, Menu, X, User } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
   const { items } = useCart();
@@ -13,7 +13,28 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlHeader = () => {
+      if (typeof window !== 'undefined') {
+        if (window.scrollY > lastScrollY && window.scrollY > 100) {
+          // Scrolling down & past 100px
+          setIsVisible(false);
+          setMobileMenuOpen(false); // Close menu if scrolling down
+        } else {
+          // Scrolling up
+          setIsVisible(true);
+        }
+        setLastScrollY(window.scrollY);
+      }
+    };
+
+    window.addEventListener('scroll', controlHeader);
+    return () => window.removeEventListener('scroll', controlHeader);
+  }, [lastScrollY]);
+
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Don't show public header in admin routes
@@ -29,7 +50,7 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isVisible ? '' : 'header-hidden'}`}>
       <div className="container header-content">
         <Link href="/" className="logo">
           AN <span>LUXORATIME</span>
