@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { getSession } from '@/lib/auth';
 
 export async function GET() {
   try {
+    const session = await getSession();
+    // If regular user, only fetch their orders. Admin can fetch all orders.
+    // Wait, AdminOrders component fetches /api/orders without extra params. 
+    // We should differentiate. If user role is user, add WHERE userId = $1.
+    // For now, let's keep GET simple: if user is not admin, filter by userId.
+    let queryParams: any[] = [];
+    let whereClause = '';
+
+    if (session && session.role !== 'admin') {
+      whereClause = 'WHERE o."userId" = $1';
+      queryParams.push(session.id);
+    }
+
     const result = await db.query(`
       SELECT o.*, 
         COALESCE(
@@ -19,9 +33,10 @@ export async function GET() {
       FROM orders o
       LEFT JOIN order_items oi ON o.id = oi."orderId"
       LEFT JOIN products p ON oi."productId" = p.id
+      ${whereClause}
       GROUP BY o.id
       ORDER BY o."createdAt" DESC
-    `);
+    `, queryParams);
     
     return NextResponse.json(result.rows);
   } catch (error) {
@@ -33,16 +48,19 @@ export async function GET() {
 export async function POST(request: Request) {
   const client = await db.pool.connect();
   try {
+    const session = await getSession();
+    const userId = session?.id || null;
+
     const body = await request.json();
-    const { customerName, customerPhone, totalAmount, items } = body;
+    const { customerName, customerPhone, customerEmail, customerAddress, customerProvince, totalAmount, items } = body;
     
     await client.query('BEGIN');
     
     const orderResult = await client.query(`
-      INSERT INTO orders ("customerName", "customerPhone", "totalAmount")
-      VALUES ($1, $2, $3)
+      INSERT INTO orders ("customerName", "customerPhone", "customerEmail", "customerAddress", "customerProvince", "totalAmount", "userId")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id
-    `, [customerName, customerPhone, totalAmount]);
+    `, [customerName, customerPhone, customerEmail, customerAddress, customerProvince, totalAmount, userId]);
     
     const orderId = orderResult.rows[0].id;
     

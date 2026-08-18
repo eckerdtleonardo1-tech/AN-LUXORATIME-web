@@ -73,6 +73,9 @@ export default function Header() {
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Hola, {user.name}</span>
+                <Link href="/my-orders" className={`nav-link ${pathname === '/my-orders' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
+                  Mis Pedidos
+                </Link>
                 {user.role === 'admin' && (
                   <Link href="/admin" className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }} onClick={() => setMobileMenuOpen(false)}>
                     Admin Panel

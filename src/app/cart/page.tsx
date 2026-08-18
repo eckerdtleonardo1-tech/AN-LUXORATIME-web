@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function CartPage() {
   const { items, total, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', address: '', province: '' });
 
   const WHATSAPP_NUMBER = '3329534029';
 
@@ -24,6 +24,9 @@ export default function CartPage() {
         body: JSON.stringify({
           customerName: formData.name,
           customerPhone: formData.phone,
+          customerEmail: formData.email,
+          customerAddress: formData.address,
+          customerProvince: formData.province,
           totalAmount: total,
           items: items.map(item => ({ id: item.id, quantity: item.quantity, price: item.price }))
         })
@@ -36,7 +39,9 @@ export default function CartPage() {
       // 2. Generar mensaje de WhatsApp
       let text = `*NUEVO PEDIDO #${orderId} - AN LUXORATIME*%0A%0A`;
       text += `*Cliente:* ${formData.name}%0A`;
-      text += `*Teléfono:* ${formData.phone}%0A%0A`;
+      text += `*Teléfono:* ${formData.phone}%0A`;
+      if (formData.email) text += `*Email:* ${formData.email}%0A`;
+      text += `*Dirección:* ${formData.address}, ${formData.province}%0A%0A`;
       text += `*Detalle:*%0A`;
       
       items.forEach(item => {
@@ -119,6 +124,37 @@ export default function CartPage() {
                   required 
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input 
+                  type="email" 
+                  className="input" 
+                  required 
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Dirección de envío</label>
+                <input 
+                  type="text" 
+                  className="input" 
+                  required 
+                  placeholder="Calle, Número, Piso/Depto"
+                  value={formData.address}
+                  onChange={e => setFormData({ ...formData, address: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Provincia / Estado</label>
+                <input 
+                  type="text" 
+                  className="input" 
+                  required 
+                  value={formData.province}
+                  onChange={e => setFormData({ ...formData, province: e.target.value })}
                 />
               </div>
               
