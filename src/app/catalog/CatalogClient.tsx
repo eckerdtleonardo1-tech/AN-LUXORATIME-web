@@ -8,6 +8,40 @@ import { X } from 'lucide-react';
 
 import LoginModal from '@/components/LoginModal';
 
+const ZoomableImage = ({ src, alt }: { src: string, alt: string }) => {
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
+
+  return (
+    <div 
+      style={{ flex: '1 1 300px', minHeight: '300px', backgroundColor: '#000', overflow: 'hidden', position: 'relative', cursor: isZooming ? 'zoom-out' : 'zoom-in' }}
+      onMouseEnter={() => setIsZooming(true)}
+      onMouseLeave={() => setIsZooming(false)}
+      onMouseMove={handleMouseMove}
+    >
+      <img 
+        src={src} 
+        alt={alt} 
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'contain',
+          transform: isZooming ? 'scale(2.5)' : 'scale(1)',
+          transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+          transition: 'transform 0.1s ease-out'
+        }} 
+      />
+    </div>
+  );
+};
+
 export default function CatalogClient({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
   const [filter, setFilter] = useState('');
@@ -126,13 +160,7 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
             >
               <X color="white" size={24} />
             </button>
-            <div style={{ flex: '1 1 300px', minHeight: '300px', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img 
-                src={selectedProduct.image} 
-                alt={selectedProduct.name} 
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-              />
-            </div>
+            <ZoomableImage src={selectedProduct.image} alt={selectedProduct.name} />
             <div style={{ flex: '1 1 300px', padding: '2.5rem' }}>
               <div style={{ textTransform: 'uppercase', color: 'var(--accent-color)', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {selectedProduct.category}
