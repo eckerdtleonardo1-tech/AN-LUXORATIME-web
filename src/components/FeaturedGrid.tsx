@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Product, useCart } from '@/components/CartProvider';
@@ -15,6 +15,24 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
   const { addToCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (products.length <= 1) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollRef.current.scrollBy({ left: 332, behavior: 'smooth' });
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [products]);
 
   const handleAddToCart = (product: Product) => {
     if (!user) {
@@ -27,7 +45,7 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="featured-scroll-container" style={{
+      <div ref={scrollRef} className="featured-scroll-container" style={{
         display: 'flex',
         overflowX: 'auto',
         gap: '2rem',
@@ -52,7 +70,7 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
               <h3 className="product-title">{p.name}</h3>
               <div className="product-price">$ {Number(p.price).toLocaleString('es-AR')}</div>
               <p className="product-desc" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>
-              <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%' }}>Ver más</Link>
+              <Link href="/catalog" className="btn btn-secondary" style={{ width: '100%', marginTop: 'auto' }}>Ver más</Link>
             </div>
           </div>
         )) : (
