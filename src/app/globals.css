@@ -289,7 +289,7 @@ p { margin-bottom: 1rem; color: var(--text-secondary); }
 .product-desc {
   font-size: 0.9rem;
   margin-bottom: 1.5rem;
-  flex: 1;
+  height: 2.7rem; /* Fixed height for 2 lines */
 }
 
 /* Footer */
