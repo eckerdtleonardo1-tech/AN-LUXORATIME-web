@@ -27,9 +27,20 @@ export default function FeaturedGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="grid-products">
+      <div className="featured-scroll-container" style={{
+        display: 'flex',
+        overflowX: 'auto',
+        gap: '2rem',
+        paddingBottom: '1rem',
+        scrollSnapType: 'x mandatory',
+        scrollbarWidth: 'thin'
+      }}>
         {products.length > 0 ? products.map((p) => (
-          <div key={p.id} className="card product-card">
+          <div key={p.id} className="card product-card" style={{
+            flex: '0 0 auto',
+            width: '300px',
+            scrollSnapAlign: 'start'
+          }}>
             <div 
               className="product-image-container" 
               style={{ cursor: 'pointer' }}
