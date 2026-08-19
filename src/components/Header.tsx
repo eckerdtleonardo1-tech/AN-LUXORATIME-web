@@ -71,7 +71,7 @@ export default function Header() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto' }}>
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Hola, {user.name}</span>
                 <Link href="/my-orders" className={`nav-link ${pathname === '/my-orders' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
                   Mis Pedidos
