@@ -16,18 +16,7 @@ export default async function Home() {
   return (
     <div className="home-page">
       {/* Hero Banner */}
-      <section className="hero" style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://watchello.es/cdn/shop/collections/gshock-casioak-resin.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-        backgroundRepeat: 'no-repeat',
-        padding: '10rem 0',
-        minHeight: '85vh',
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
-        width: '100%'
-      }}>
+      <section className="hero">
         <div className="container">
           <h1 style={{ textTransform: 'uppercase', marginBottom: '1rem', color: '#fff' }}>
             Resistencia <span style={{ color: 'var(--accent-color)' }}>Extrema</span>
