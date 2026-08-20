@@ -78,7 +78,7 @@ p { margin-bottom: 1rem; color: var(--text-secondary); }
 /* Components */
 .hero {
   background-color: var(--bg-color);
-  background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/fondo-hd.jpg.png");
+  background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/fondo-centrado.jpg.png");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
