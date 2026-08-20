@@ -45,6 +45,7 @@ const ZoomableImage = ({ src, alt }: { src: string, alt: string }) => {
 export default function CatalogClient({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
   const [filter, setFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { addToCart } = useCart();
@@ -64,12 +65,23 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
 
   const filteredProducts = products.filter(p => {
     if (filter && p.category !== filter) return false;
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   return (
     <div className="container" style={{ padding: '3rem 20px' }}>
       <h1 style={{ textTransform: 'uppercase', marginBottom: '2rem' }}>Catálogo de Productos</h1>
+      <div style={{ marginBottom: '1.5rem', display: 'flex' }}>
+        <input 
+          type="text" 
+          placeholder="Buscar producto por nombre..." 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="input"
+          style={{ width: '100%', maxWidth: '500px' }}
+        />
+      </div>
       
       {categories.length > 0 && (
         <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>

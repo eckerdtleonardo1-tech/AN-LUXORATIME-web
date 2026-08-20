@@ -439,6 +439,11 @@ th {
     border-top: 1px solid var(--surface-border);
   }
   
+  .grid-products {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  
   .admin-layout {
     flex-direction: column;
   }
