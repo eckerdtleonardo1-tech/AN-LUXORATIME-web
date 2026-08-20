@@ -78,8 +78,8 @@ p { margin-bottom: 1rem; color: var(--text-secondary); }
 /* Components */
 .hero {
   background-color: var(--bg-color);
-  background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://watchello.es/cdn/shop/collections/gshock-casioak-resin.jpg");
-  background-size: auto 100%; /* Escala la imagen para que quepa verticalmente sin zoom */
+  background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/fondo.jpg");
+  background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   display: flex;
