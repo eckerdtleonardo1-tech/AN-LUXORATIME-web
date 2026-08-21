@@ -5,12 +5,32 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { CartProvider } from "@/components/CartProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WhatsAppBubble from "@/components/WhatsAppBubble";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AN LUXORATIME | Relojes G-Shock",
   description: "Especialistas en relojes Casio G-Shock. Catálogo y venta directa.",
+  icons: {
+    icon: '/logo-cropped.png',
+    apple: '/logo-cropped.png',
+  },
+  openGraph: {
+    title: "AN LUXORATIME | Relojes G-Shock",
+    description: "Especialistas en relojes Casio G-Shock. Catálogo y venta directa.",
+    url: "https://anluxoratime.com",
+    siteName: "AN LUXORATIME",
+    images: [
+      {
+        url: "/logo-cropped.png",
+        width: 800,
+        height: 800,
+      },
+    ],
+    locale: "es_AR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -28,6 +48,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <WhatsAppBubble />
           </CartProvider>
         </AuthProvider>
       </body>

@@ -23,13 +23,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, description, price, stock, image, category, featured } = body;
+    const { name, description, price, stock, image, category, featured, gallery } = body;
     
     const result = await db.query(`
-      INSERT INTO products (name, description, price, stock, image, category, featured)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO products (name, description, price, stock, image, category, featured, gallery)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id
-    `, [name, description, price, stock, image, category, featured || false]);
+    `, [name, description, price, stock, image, category, featured || false, JSON.stringify(gallery || [])]);
     
     return NextResponse.json({ id: result.rows[0].id, ...body }, { status: 201 });
   } catch (error) {

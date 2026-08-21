@@ -24,6 +24,7 @@ export const initDb = async () => {
       );
 
       ALTER TABLE products ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;
+      ALTER TABLE products ADD COLUMN IF NOT EXISTS gallery JSONB DEFAULT '[]'::jsonb;
 
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,

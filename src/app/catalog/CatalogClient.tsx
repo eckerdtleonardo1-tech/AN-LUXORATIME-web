@@ -47,6 +47,7 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
   const [filter, setFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
@@ -150,7 +151,7 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
           alignItems: 'center',
           justifyContent: 'center',
           padding: '20px'
-        }} onClick={() => setSelectedProduct(null)}>
+        }} onClick={() => { setSelectedProduct(null); setActiveImageIndex(0); }}>
           <div 
             className="card" 
             style={{ 
@@ -167,12 +168,40 @@ export default function CatalogClient({ initialProducts }: { initialProducts: Pr
             onClick={e => e.stopPropagation()}
           >
             <button 
-              onClick={() => setSelectedProduct(null)}
+              onClick={() => { setSelectedProduct(null); setActiveImageIndex(0); }}
               style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10, background: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '5px' }}
             >
               <X color="white" size={24} />
             </button>
-            <ZoomableImage src={selectedProduct.image} alt={selectedProduct.name} />
+            <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column' }}>
+              <ZoomableImage 
+                src={
+                  activeImageIndex === 0 
+                    ? selectedProduct.image 
+                    : (selectedProduct.gallery && selectedProduct.gallery[activeImageIndex - 1]) || selectedProduct.image
+                } 
+                alt={selectedProduct.name} 
+              />
+              {selectedProduct.gallery && selectedProduct.gallery.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px', padding: '10px', overflowX: 'auto', backgroundColor: '#111' }}>
+                  <img 
+                    src={selectedProduct.image} 
+                    alt="Main"
+                    onClick={() => setActiveImageIndex(0)}
+                    style={{ width: '60px', height: '60px', objectFit: 'cover', cursor: 'pointer', border: activeImageIndex === 0 ? '2px solid var(--accent-color)' : '2px solid transparent', borderRadius: '4px' }}
+                  />
+                  {selectedProduct.gallery.map((img, idx) => (
+                    <img 
+                      key={idx}
+                      src={img} 
+                      alt={`Gallery ${idx}`}
+                      onClick={() => setActiveImageIndex(idx + 1)}
+                      style={{ width: '60px', height: '60px', objectFit: 'cover', cursor: 'pointer', border: activeImageIndex === idx + 1 ? '2px solid var(--accent-color)' : '2px solid transparent', borderRadius: '4px' }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
             <div style={{ flex: '1 1 300px', padding: '2.5rem' }}>
               <div style={{ textTransform: 'uppercase', color: 'var(--accent-color)', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {selectedProduct.category}

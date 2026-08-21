@@ -36,6 +36,34 @@ export default function AdminProducts() {
     }
   };
 
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    
+    // We append the new images to the existing gallery
+    const currentGallery = currentProduct.gallery || [];
+    
+    files.forEach(file => {
+      if (file.size > 1024 * 1024 * 5) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCurrentProduct(prev => ({ 
+          ...prev, 
+          gallery: [...(prev.gallery || []), reader.result as string] 
+        }));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setCurrentProduct(prev => {
+      const newGallery = [...(prev.gallery || [])];
+      newGallery.splice(index, 1);
+      return { ...prev, gallery: newGallery };
+    });
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const isNew = !currentProduct.id;
@@ -50,7 +78,7 @@ export default function AdminProducts() {
 
     if (res.ok) {
       setIsEditing(false);
-      setCurrentProduct({ name: '', description: '', price: 0, stock: 0, image: '', category: '', featured: false });
+      setCurrentProduct({ name: '', description: '', price: 0, stock: 0, image: '', category: '', featured: false, gallery: [] });
       fetchProducts();
     } else {
       alert('Error al guardar el producto');
@@ -117,11 +145,31 @@ export default function AdminProducts() {
               <input type="text" className="input" required value={currentProduct.category} onChange={e => setCurrentProduct({...currentProduct, category: e.target.value})} />
             </div>
             <div className="form-group">
-              <label className="form-label">Imagen del Producto</label>
+              <label className="form-label">Imagen Principal (Portada)</label>
               <input type="file" accept="image/*" className="input" onChange={handleImageUpload} />
               {currentProduct.image && (
                 <div style={{ marginTop: '1rem' }}>
                   <img src={currentProduct.image} alt="Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--surface-border)' }} />
+                </div>
+              )}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Galería Secundaria (Varias imágenes)</label>
+              <input type="file" accept="image/*" multiple className="input" onChange={handleGalleryUpload} />
+              {currentProduct.gallery && currentProduct.gallery.length > 0 && (
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {currentProduct.gallery.map((img, idx) => (
+                    <div key={idx} style={{ position: 'relative' }}>
+                      <img src={img} alt={`Gallery ${idx}`} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--surface-border)' }} />
+                      <button 
+                        type="button" 
+                        onClick={() => removeGalleryImage(idx)}
+                        style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

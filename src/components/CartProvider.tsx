@@ -11,6 +11,7 @@ export type Product = {
   image: string;
   category: string;
   featured?: boolean;
+  gallery?: string[];
 };
 
 export type CartItem = Product & { quantity: number };
