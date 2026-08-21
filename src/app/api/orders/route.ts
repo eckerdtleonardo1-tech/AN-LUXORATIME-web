@@ -84,6 +84,13 @@ export async function POST(request: Request) {
         INSERT INTO order_items ("orderId", "productId", quantity, "priceAtTime")
         VALUES ($1, $2, $3, $4)
       `, [orderId, item.id, item.quantity, item.price]);
+      
+      // Descontar del stock real
+      await client.query(`
+        UPDATE products 
+        SET stock = stock - $1 
+        WHERE id = $2
+      `, [item.quantity, item.id]);
     }
     
     await client.query('COMMIT');

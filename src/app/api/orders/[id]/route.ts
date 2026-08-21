@@ -30,8 +30,14 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const params = await context.params;
     const id = params.id;
 
-    // Soft delete to preserve sales history
+    // Soft delete to preserve sales history but consider it cancelled
     await db.query(`UPDATE orders SET archived = true WHERE id = $1`, [id]);
+    
+    // Restore stock
+    const itemsResult = await db.query(`SELECT "productId", quantity FROM order_items WHERE "orderId" = $1`, [id]);
+    for (const item of itemsResult.rows) {
+      await db.query(`UPDATE products SET stock = stock + $1 WHERE id = $2`, [item.quantity, item.productId]);
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {
