@@ -99,26 +99,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return (
     <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, total }}>
       {children}
-      
       {/* Toast Notification */}
       {toastMessage && (
         <div style={{
           position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          backgroundColor: '#25D366',
+          bottom: '50px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: 'rgba(0,0,0,0.8)',
           color: 'white',
-          padding: '12px 24px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          padding: '10px 20px',
+          borderRadius: '20px',
           zIndex: 9999,
-          fontWeight: 'bold',
+          fontSize: '0.9rem',
           animation: 'fadeInOut 3s ease forwards',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap'
         }}>
-          🛒 {toastMessage.message}
+          {toastMessage.message}
         </div>
       )}
     </CartContext.Provider>

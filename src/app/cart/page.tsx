@@ -77,30 +77,30 @@ export default function CartPage() {
       const orderId = data.id;
 
       // 2. Generar mensaje de WhatsApp
-      let text = `*🛍️ NUEVO PEDIDO #${orderId} - AN LUXORATIME*%0A%0A`;
+      let text = `*🛍️ NUEVO PEDIDO #${orderId} - AN LUXORATIME*\n\n`;
       
-      text += `*👤 Datos del Cliente:*%0A`;
-      text += `• *Nombre:* ${formData.name}%0A`;
-      text += `• *WhatsApp:* ${formData.phone}%0A`;
-      if (formData.email) text += `• *Email:* ${formData.email}%0A%0A`;
+      text += `*👤 Datos del Cliente:*\n`;
+      text += `• *Nombre:* ${formData.name}\n`;
+      text += `• *WhatsApp:* ${formData.phone}\n`;
+      if (formData.email) text += `• *Email:* ${formData.email}\n\n`;
       
-      text += `*🚚 Datos de Envío:*%0A`;
-      text += `• *Dirección:* ${formData.address}%0A`;
-      text += `• *Ciudad:* ${formData.city}%0A`;
-      text += `• *Provincia:* ${formData.province}%0A`;
-      text += `• *Código Postal:* ${formData.zip}%0A%0A`;
+      text += `*🚚 Datos de Envío:*\n`;
+      text += `• *Dirección:* ${formData.address}\n`;
+      text += `• *Ciudad:* ${formData.city}\n`;
+      text += `• *Provincia:* ${formData.province}\n`;
+      text += `• *Código Postal:* ${formData.zip}\n\n`;
       
-      text += `*📦 Detalle del Pedido:*%0A`;
+      text += `*📦 Detalle del Pedido:*\n`;
       items.forEach(item => {
-        text += `- ${item.quantity}x ${item.name} ($${item.price.toLocaleString('es-AR')})%0A`;
+        text += `- ${item.quantity}x ${item.name} ($${item.price.toLocaleString('es-AR')})\n`;
       });
       
-      text += `%0A*💰 TOTAL: $${total.toLocaleString('es-AR')}*%0A%0A`;
+      text += `\n*💰 TOTAL: $${total.toLocaleString('es-AR')}*\n\n`;
       text += `¡Hola! Quiero confirmar mi pedido y coordinar el pago/envío.`;
 
       // 3. Limpiar carrito y redirigir
       clearCart();
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
       
     } catch (error) {
       alert('Hubo un error al procesar el pedido. Por favor intenta nuevamente.');
