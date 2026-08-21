@@ -7,7 +7,15 @@ import Link from 'next/link';
 export default function CartPage() {
   const { items, total, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', address: '', province: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    phone: '', 
+    email: '', 
+    address: '', 
+    city: '',
+    province: '',
+    zip: ''
+  });
 
   const WHATSAPP_NUMBER = '3329534029';
 
@@ -25,7 +33,7 @@ export default function CartPage() {
           customerName: formData.name,
           customerPhone: formData.phone,
           customerEmail: formData.email,
-          customerAddress: formData.address,
+          customerAddress: `${formData.address}, ${formData.city}, ${formData.province} (${formData.zip})`,
           customerProvince: formData.province,
           totalAmount: total,
           items: items.map(item => ({ id: item.id, quantity: item.quantity, price: item.price }))
@@ -37,19 +45,26 @@ export default function CartPage() {
       const orderId = data.id;
 
       // 2. Generar mensaje de WhatsApp
-      let text = `*NUEVO PEDIDO #${orderId} - AN LUXORATIME*%0A%0A`;
-      text += `*Cliente:* ${formData.name}%0A`;
-      text += `*Teléfono:* ${formData.phone}%0A`;
-      if (formData.email) text += `*Email:* ${formData.email}%0A`;
-      text += `*Dirección:* ${formData.address}, ${formData.province}%0A%0A`;
-      text += `*Detalle:*%0A`;
+      let text = `*🛍️ NUEVO PEDIDO #${orderId} - AN LUXORATIME*%0A%0A`;
       
+      text += `*👤 Datos del Cliente:*%0A`;
+      text += `• *Nombre:* ${formData.name}%0A`;
+      text += `• *WhatsApp:* ${formData.phone}%0A`;
+      if (formData.email) text += `• *Email:* ${formData.email}%0A%0A`;
+      
+      text += `*🚚 Datos de Envío:*%0A`;
+      text += `• *Dirección:* ${formData.address}%0A`;
+      text += `• *Ciudad:* ${formData.city}%0A`;
+      text += `• *Provincia:* ${formData.province}%0A`;
+      text += `• *Código Postal:* ${formData.zip}%0A%0A`;
+      
+      text += `*📦 Detalle del Pedido:*%0A`;
       items.forEach(item => {
         text += `- ${item.quantity}x ${item.name} ($${item.price.toLocaleString('es-AR')})%0A`;
       });
       
-      text += `%0A*TOTAL: $${total.toLocaleString('es-AR')}*%0A%0A`;
-      text += `Hola! Quiero confirmar mi pedido y coordinar el pago/envío.`;
+      text += `%0A*💰 TOTAL: $${total.toLocaleString('es-AR')}*%0A%0A`;
+      text += `¡Hola! Quiero confirmar mi pedido y coordinar el pago/envío.`;
 
       // 3. Limpiar carrito y redirigir
       clearCart();
@@ -77,37 +92,37 @@ export default function CartPage() {
       <h1 style={{ textTransform: 'uppercase', marginBottom: '2rem' }}>Tu Carrito</h1>
       
       <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 100%', maxWidth: '100%' }}>
+        <div style={{ flex: '1.5 1 400px', maxWidth: '100%' }}>
           <div className="card" style={{ padding: '1rem' }}>
             {items.map(item => (
-              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid var(--surface-border)' }}>
+              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid var(--surface-border)', flexWrap: 'wrap' }}>
                 <img src={item.image || 'https://via.placeholder.com/80'} alt={item.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
-                <div style={{ flex: '1' }}>
+                <div style={{ flex: '1 1 150px' }}>
                   <h4 style={{ marginBottom: '0.25rem' }}>{item.name}</h4>
                   <div style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>$ {item.price.toLocaleString('es-AR')}</div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '0 0 auto' }}>
                   <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem' }} onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                  <span>{item.quantity}</span>
+                  <span style={{ minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
                   <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem' }} onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                 </div>
-                <button className="btn btn-danger" style={{ padding: '0.5rem' }} onClick={() => removeFromCart(item.id)}>X</button>
+                <button className="btn btn-danger" style={{ padding: '0.5rem', marginLeft: 'auto' }} onClick={() => removeFromCart(item.id)}>X</button>
               </div>
             ))}
             
-            <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0 }}>Total</h3>
-              <h2 style={{ margin: 0, color: 'var(--accent-color)' }}>$ {total.toLocaleString('es-AR')}</h2>
+            <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <h3 style={{ margin: 0 }}>Total Estimado</h3>
+              <h2 style={{ margin: 0, color: 'var(--accent-color)', fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>$ {total.toLocaleString('es-AR')}</h2>
             </div>
           </div>
         </div>
 
-        <div style={{ flex: '1 1 300px', maxWidth: '100%' }}>
+        <div style={{ flex: '1 1 350px', maxWidth: '100%' }}>
           <div className="card" style={{ padding: '2rem' }}>
-            <h3 style={{ marginBottom: '1.5rem' }}>Datos de Contacto</h3>
+            <h3 style={{ marginBottom: '1.5rem', color: 'var(--accent-color)' }}>Datos de Envío</h3>
             <form onSubmit={handleCheckout}>
               <div className="form-group">
-                <label className="form-label">Nombre y Apellido</label>
+                <label className="form-label">Nombre y Apellido *</label>
                 <input 
                   type="text" 
                   className="input" 
@@ -116,8 +131,9 @@ export default function CartPage() {
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
+              
               <div className="form-group">
-                <label className="form-label">Teléfono (WhatsApp)</label>
+                <label className="form-label">WhatsApp *</label>
                 <input 
                   type="tel" 
                   className="input" 
@@ -126,18 +142,21 @@ export default function CartPage() {
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
+
               <div className="form-group">
-                <label className="form-label">Email</label>
+                <label className="form-label">Email (opcional)</label>
                 <input 
                   type="email" 
                   className="input" 
-                  required 
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
+
+              <h4 style={{ margin: '1.5rem 0 1rem', borderBottom: '1px solid var(--surface-border)', paddingBottom: '0.5rem' }}>Domicilio de Entrega</h4>
+
               <div className="form-group">
-                <label className="form-label">Dirección de envío</label>
+                <label className="form-label">Dirección *</label>
                 <input 
                   type="text" 
                   className="input" 
@@ -147,8 +166,32 @@ export default function CartPage() {
                   onChange={e => setFormData({ ...formData, address: e.target.value })}
                 />
               </div>
+              
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <div className="form-group" style={{ flex: '2 1 150px' }}>
+                  <label className="form-label">Ciudad / Localidad *</label>
+                  <input 
+                    type="text" 
+                    className="input" 
+                    required 
+                    value={formData.city}
+                    onChange={e => setFormData({ ...formData, city: e.target.value })}
+                  />
+                </div>
+                <div className="form-group" style={{ flex: '1 1 80px' }}>
+                  <label className="form-label">C.P. *</label>
+                  <input 
+                    type="text" 
+                    className="input" 
+                    required 
+                    value={formData.zip}
+                    onChange={e => setFormData({ ...formData, zip: e.target.value })}
+                  />
+                </div>
+              </div>
+
               <div className="form-group">
-                <label className="form-label">Provincia / Estado</label>
+                <label className="form-label">Provincia *</label>
                 <input 
                   type="text" 
                   className="input" 
@@ -161,13 +204,13 @@ export default function CartPage() {
               <button 
                 type="submit" 
                 className="btn btn-primary" 
-                style={{ width: '100%', marginTop: '1rem', backgroundColor: '#25D366' }} // WhatsApp Green
+                style={{ width: '100%', marginTop: '1rem', backgroundColor: '#25D366', color: 'white', fontWeight: 'bold' }} 
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Procesando...' : 'Comprar por WhatsApp'}
               </button>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem' }}>
-                Serás redirigido a WhatsApp para finalizar la compra y coordinar el pago.
+                Serás redirigido a WhatsApp para enviar todos tus datos de forma segura y coordinar el pago.
               </p>
             </form>
           </div>
