@@ -72,7 +72,10 @@ export default function CartPage() {
         })
       });
 
-      if (!res.ok) throw new Error('Error al crear orden');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Error al crear orden');
+      }
       const data = await res.json();
       const orderId = data.id;
 
@@ -102,8 +105,8 @@ export default function CartPage() {
       clearCart();
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
       
-    } catch (error) {
-      alert('Hubo un error al procesar el pedido. Por favor intenta nuevamente.');
+    } catch (error: any) {
+      alert(error.message || 'Hubo un error al procesar el pedido. Por favor intenta nuevamente.');
     } finally {
       setIsSubmitting(false);
     }
