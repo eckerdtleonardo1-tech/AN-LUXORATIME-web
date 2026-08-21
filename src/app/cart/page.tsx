@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/components/CartProvider';
 import Link from 'next/link';
 
@@ -18,6 +18,38 @@ export default function CartPage() {
   });
 
   const WHATSAPP_NUMBER = '3329534029';
+  const [provinces, setProvinces] = useState<{id: string, nombre: string}[]>([]);
+  const [cities, setCities] = useState<{id: string, nombre: string}[]>([]);
+
+  useEffect(() => {
+    fetch('https://apis.datos.gob.ar/georef/api/provincias?campos=id,nombre&orden=nombre')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.provincias) setProvinces(data.provincias);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (formData.province) {
+      // Find the province ID for the API
+      const prov = provinces.find(p => p.nombre === formData.province);
+      if (prov) {
+        fetch(`https://apis.datos.gob.ar/georef/api/localidades?provincia=${prov.id}&campos=id,nombre&max=1000&orden=nombre`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.localidades) {
+              // Filtrar repetidos por nombre para que quede más limpio
+              const unicas = Array.from(new Map(data.localidades.map((l: any) => [l.nombre, l])).values());
+              setCities(unicas as any);
+            }
+          })
+          .catch(console.error);
+      }
+    } else {
+      setCities([]);
+    }
+  }, [formData.province, provinces]);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,16 +199,47 @@ export default function CartPage() {
                 />
               </div>
               
+              <div className="form-group">
+                <label className="form-label">Provincia *</label>
+                <select 
+                  className="input" 
+                  required 
+                  value={formData.province}
+                  onChange={e => setFormData({ ...formData, province: e.target.value, city: '' })}
+                >
+                  <option value="">Selecciona una provincia</option>
+                  {provinces.map(prov => (
+                    <option key={prov.id} value={prov.nombre}>{prov.nombre}</option>
+                  ))}
+                </select>
+              </div>
+
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <div className="form-group" style={{ flex: '2 1 150px' }}>
                   <label className="form-label">Ciudad / Localidad *</label>
-                  <input 
-                    type="text" 
-                    className="input" 
-                    required 
-                    value={formData.city}
-                    onChange={e => setFormData({ ...formData, city: e.target.value })}
-                  />
+                  {cities.length > 0 ? (
+                    <select 
+                      className="input" 
+                      required 
+                      value={formData.city}
+                      onChange={e => setFormData({ ...formData, city: e.target.value })}
+                    >
+                      <option value="">Selecciona una ciudad</option>
+                      {cities.map(city => (
+                        <option key={city.id} value={city.nombre}>{city.nombre}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input 
+                      type="text" 
+                      className="input" 
+                      required 
+                      value={formData.city}
+                      onChange={e => setFormData({ ...formData, city: e.target.value })}
+                      placeholder={formData.province ? "Cargando..." : "Primero selecciona provincia"}
+                      disabled={!formData.province}
+                    />
+                  )}
                 </div>
                 <div className="form-group" style={{ flex: '1 1 80px' }}>
                   <label className="form-label">C.P. *</label>
@@ -188,17 +251,6 @@ export default function CartPage() {
                     onChange={e => setFormData({ ...formData, zip: e.target.value })}
                   />
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Provincia *</label>
-                <input 
-                  type="text" 
-                  className="input" 
-                  required 
-                  value={formData.province}
-                  onChange={e => setFormData({ ...formData, province: e.target.value })}
-                />
               </div>
               
               <button 

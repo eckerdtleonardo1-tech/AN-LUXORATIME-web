@@ -61,6 +61,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, isLoaded]);
 
+  const [toastMessage, setToastMessage] = useState<{message: string, id: number} | null>(null);
+
   const addToCart = (product: Product) => {
     setItems(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -69,6 +71,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+    
+    // Show toast
+    const id = Date.now();
+    setToastMessage({ message: `¡${product.name} agregado al carrito!`, id });
+    setTimeout(() => {
+      setToastMessage(prev => prev?.id === id ? null : prev);
+    }, 3000);
   };
 
   const removeFromCart = (productId: number) => {
@@ -90,6 +99,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return (
     <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, total }}>
       {children}
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          backgroundColor: '#25D366',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          zIndex: 9999,
+          fontWeight: 'bold',
+          animation: 'fadeInOut 3s ease forwards',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          🛒 {toastMessage.message}
+        </div>
+      )}
     </CartContext.Provider>
   );
 }
