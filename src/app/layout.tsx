@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://anluxoratime.vercel.app'),
   title: "AN LUXORATIME | Relojes G-Shock",
   description: "Especialistas en relojes Casio G-Shock. Catálogo y venta directa.",
   icons: {

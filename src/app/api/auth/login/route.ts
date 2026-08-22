@@ -8,8 +8,9 @@ export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
-    // Check if it's the admin password directly
-    if (password === 'mt03roldan') {
+    // Admin login via environment variable (never hardcoded)
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (adminPassword && password === adminPassword) {
       const token = signToken({ id: 0, email: 'admin@luxoratime.com', role: 'admin' });
       const cookieStore = await cookies();
       cookieStore.set('auth_token', token, { httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 7 });

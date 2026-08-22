@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Mail, Phone, Clock } from 'lucide-react';
+import { WHATSAPP_NUMBER } from '@/lib/constants';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const WHATSAPP_NUMBER = '3329534029';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/components/CartProvider';
 import Link from 'next/link';
+import { WHATSAPP_NUMBER } from '@/lib/constants';
 
 export default function CartPage() {
   const { items, total, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -17,7 +18,6 @@ export default function CartPage() {
     zip: ''
   });
 
-  const WHATSAPP_NUMBER = '3329534029';
   const [provinces, setProvinces] = useState<{id: string, nombre: string}[]>([]);
   const [cities, setCities] = useState<{id: string, nombre: string}[]>([]);
 

@@ -5,14 +5,16 @@ import { getSession } from '@/lib/auth';
 export async function GET() {
   try {
     const session = await getSession();
-    // If regular user, only fetch their orders. Admin can fetch all orders.
-    // Wait, AdminOrders component fetches /api/orders without extra params. 
-    // We should differentiate. If user role is user, add WHERE userId = $1.
-    // For now, let's keep GET simple: if user is not admin, filter by userId.
+    
+    // FIX 3: Requerir autenticación para ver pedidos
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     let queryParams: any[] = [];
     let whereClause = '';
 
-    if (session && session.role !== 'admin') {
+    if (session.role !== 'admin') {
       whereClause = 'WHERE o."userId" = $1';
       queryParams.push(session.id);
     }
@@ -49,18 +51,17 @@ export async function POST(request: Request) {
   const client = await db.pool.connect();
   try {
     const session = await getSession();
-    // 1. OBLIGAR A ESTAR LOGUEADO
     if (!session || !session.id) {
       return NextResponse.json({ error: 'Debes iniciar sesión para realizar un pedido' }, { status: 401 });
     }
     const userId = session.id;
 
     const body = await request.json();
-    const { customerName, customerPhone, customerEmail, customerAddress, customerProvince, totalAmount, items } = body;
+    const { customerName, customerPhone, customerEmail, customerAddress, customerProvince, items } = body;
     
     await client.query('BEGIN');
     
-    // 2. LIMITADOR ANTI-SPAM (Máximo 1 pedido cada 3 minutos por usuario)
+    // Limitador anti-spam (máximo 1 pedido cada 3 minutos por usuario)
     const recentOrders = await client.query(`
       SELECT id FROM orders 
       WHERE "userId" = $1 AND "createdAt" > NOW() - INTERVAL '3 minutes'
@@ -71,6 +72,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Por seguridad anti-spam, debes esperar 3 minutos para hacer otro pedido.' }, { status: 429 });
     }
 
+    // FIX 4 & 5: Calcular precios desde la DB y validar stock
+    let totalAmount = 0;
+    const validatedItems: { id: number; quantity: number; price: number }[] = [];
+
+    for (const item of items) {
+      if (!item.id || !item.quantity || item.quantity <= 0) {
+        await client.query('ROLLBACK');
+        return NextResponse.json({ error: 'Datos de producto inválidos' }, { status: 400 });
+      }
+
+      const productResult = await client.query(
+        'SELECT id, price, stock FROM products WHERE id = $1',
+        [item.id]
+      );
+
+      if (productResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return NextResponse.json({ error: `Producto #${item.id} no encontrado` }, { status: 400 });
+      }
+
+      const product = productResult.rows[0];
+      const realPrice = Number(product.price);
+
+      // FIX 5: Validar stock suficiente
+      if (product.stock < item.quantity) {
+        await client.query('ROLLBACK');
+        return NextResponse.json({ error: `Stock insuficiente para el producto #${item.id}. Disponible: ${product.stock}` }, { status: 400 });
+      }
+
+      totalAmount += realPrice * item.quantity;
+      validatedItems.push({ id: item.id, quantity: item.quantity, price: realPrice });
+    }
+
     const orderResult = await client.query(`
       INSERT INTO orders ("customerName", "customerPhone", "customerEmail", "customerAddress", "customerProvince", "totalAmount", "userId")
       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -79,13 +113,13 @@ export async function POST(request: Request) {
     
     const orderId = orderResult.rows[0].id;
     
-    for (const item of items) {
+    for (const item of validatedItems) {
       await client.query(`
         INSERT INTO order_items ("orderId", "productId", quantity, "priceAtTime")
         VALUES ($1, $2, $3, $4)
       `, [orderId, item.id, item.quantity, item.price]);
       
-      // Descontar del stock real
+      // Descontar del stock real (ya validamos que alcanza)
       await client.query(`
         UPDATE products 
         SET stock = stock - $1 

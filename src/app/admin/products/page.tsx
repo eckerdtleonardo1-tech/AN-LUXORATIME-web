@@ -21,39 +21,55 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 1024 * 1024 * 5) { // 5MB limit
-        alert('La imagen es demasiado grande. Máximo 5MB.');
-        return;
-      }
+  const compressImage = (file: File, maxWidth: number, quality: number): Promise<string> => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setCurrentProduct(prev => ({ ...prev, image: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-    
-    // We append the new images to the existing gallery
-    const currentGallery = currentProduct.gallery || [];
-    
-    files.forEach(file => {
-      if (file.size > 1024 * 1024 * 5) return;
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCurrentProduct(prev => ({ 
-          ...prev, 
-          gallery: [...(prev.gallery || []), reader.result as string] 
-        }));
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024 * 5) {
+        alert('La imagen es demasiado grande. Máximo 5MB.');
+        return;
+      }
+      const compressed = await compressImage(file, 800, 0.7);
+      setCurrentProduct(prev => ({ ...prev, image: compressed }));
+    }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    
+    for (const file of files) {
+      if (file.size > 1024 * 1024 * 5) continue;
+      const compressed = await compressImage(file, 800, 0.7);
+      setCurrentProduct(prev => ({ 
+        ...prev, 
+        gallery: [...(prev.gallery || []), compressed] 
+      }));
+    }
   };
 
   const removeGalleryImage = (index: number) => {
