@@ -5,7 +5,6 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { CartProvider } from "@/components/CartProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import WhatsAppBubble from "@/components/WhatsAppBubble";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,7 +47,6 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <WhatsAppBubble />
           </CartProvider>
         </AuthProvider>
       </body>
