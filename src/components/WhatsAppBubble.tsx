@@ -8,7 +8,7 @@ export default function WhatsAppBubble() {
 
   return (
     <a
-      href={https://wa.me/ + WHATSAPP_NUMBER + ?text= + encodeURIComponent(message)}
+      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`}
       target="_blank"
       rel="noopener noreferrer"
       style={{
